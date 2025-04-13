@@ -70,9 +70,15 @@ void					init_philo(char **argv, pthread_mutex_t *forks,
 							t_program *program);
 void					init_forks(int total_philos, t_program *program);
 void					init_program(char **argv, t_program *program);
-//	Routine
+//	Routine philo
 void					*routine_philo(void *arg);
+void					eat_philo(t_philo *philo);
+int						is_dead(t_program *program);
+// Monitor philo
+void    				take_forks(int i, t_program *program);
+void    				put_forks(int i, t_program *program);
 // utils
 int						ft_usleep(size_t milliseconds);
 size_t					get_current_time(void);
+void					test(int i, t_program *program);
 #endif

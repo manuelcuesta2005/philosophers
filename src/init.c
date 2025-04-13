@@ -60,6 +60,8 @@ void	init_program(char **argv, t_program *program)
 	int	i;
 
 	i = 0;
+	program->total_philos = ft_atoi(argv[1]);
+	program->dead = 0;
 	program->state = malloc(sizeof(int) * program->total_philos);
 	if (!program->state)
 		return ;
@@ -68,12 +70,10 @@ void	init_program(char **argv, t_program *program)
 		program->state[i] = THINKING;
 		i++;
 	}
-	program->total_philos = ft_atoi(argv[1]);
-	program->dead = 0;
+	init_forks(program->total_philos, program);
 	pthread_mutex_init(&program->dead_lock, NULL);
 	pthread_mutex_init(&program->meal_lock, NULL);
 	pthread_mutex_init(&program->write_lock, NULL);
 	pthread_mutex_init(&program->monitor_lock, NULL);
-	init_forks(program->total_philos, program);
 	init_philo(argv, program->total_forks, program);
 }
