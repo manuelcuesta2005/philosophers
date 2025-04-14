@@ -58,3 +58,14 @@ size_t	get_current_time(void)
 		write(2, "gettimeofday() error\n", 22);
 	return (time.tv_sec * 1000 + time.tv_usec / 1000);
 }
+
+void	print_status(t_philo *philo, const char *status, const char *color)
+{
+	size_t	timestamp;
+
+	pthread_mutex_lock(&philo->program->write_lock);
+	timestamp = get_current_time() - philo->program->start_time;
+	printf("%s[%zu] Philo %d %s%s\n", color, timestamp, philo->id, status, RESET);
+	pthread_mutex_unlock(&philo->program->write_lock);
+
+}

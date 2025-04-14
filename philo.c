@@ -61,14 +61,7 @@ int	main(int argc, char **argv)
 		pthread_mutex_destroy(program.philos[i].rigth_fork);
 		i++;
 	}
-	pthread_mutex_destroy(&program.write_lock);
-	pthread_mutex_destroy(&program.meal_lock);
-	pthread_mutex_destroy(&program.dead_lock);
-	pthread_mutex_destroy(&program.monitor_lock);
-
 	free(threads);
-	free(program.philos);
-	free(program.total_forks); // suponiendo que se llama así
-
+	destroy_program(&program);
 	return (0);
 }

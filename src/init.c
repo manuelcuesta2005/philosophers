@@ -14,25 +14,25 @@
 void	init_philo(char **argv, pthread_mutex_t *forks, t_program *program)
 {
 	int		i;
-	int		count_philos;
+	int		total_philos;
 	t_philo	*philos;
 
 	i = 0;
-	count_philos = program->total_philos;
-	philos = malloc(sizeof(t_philo) * count_philos);
+	total_philos = program->total_philos;
+	philos = malloc(sizeof(t_philo) * total_philos);
 	if (!philos)
 		return ;
-	while (i < count_philos)
+	while (i < total_philos)
 	{
 		philos[i].id = i + 1;
 		philos[i].time_die = ft_atoi(argv[2]);
 		philos[i].time_eat = ft_atoi(argv[3]);
 		philos[i].time_sleep = ft_atoi(argv[4]);
-		philos[i].last_eaten_time = 0;
 		philos[i].meals_eaten = 0;
-		philos[i].rigth_fork = &forks[i];
-		philos[i].left_fork = &forks[(i + 1) % count_philos];
+		philos[i].left_fork = &forks[i];
+		philos[i].rigth_fork = &forks[(i + 1) % total_philos];
 		philos[i].program = program;
+		philos[i].last_eaten_time = philos->program->start_time;
 		i++;
 	}
 	program->philos = philos;
@@ -57,7 +57,7 @@ void	init_forks(int total_philos, t_program *program)
 
 void	init_program(char **argv, t_program *program)
 {
-	int	i;
+	int		i;
 
 	i = 0;
 	program->total_philos = ft_atoi(argv[1]);
@@ -70,10 +70,36 @@ void	init_program(char **argv, t_program *program)
 		program->state[i] = THINKING;
 		i++;
 	}
+	program->start_time = get_current_time();
 	init_forks(program->total_philos, program);
 	pthread_mutex_init(&program->dead_lock, NULL);
 	pthread_mutex_init(&program->meal_lock, NULL);
 	pthread_mutex_init(&program->write_lock, NULL);
 	pthread_mutex_init(&program->monitor_lock, NULL);
 	init_philo(argv, program->total_forks, program);
+}
+
+void	destroy_program(t_program *program)
+{
+	int	i;
+	
+	i = 0;
+	if (program->philos)
+		free(program->philos);
+	if (program->state)
+		free(program->state);
+	if (program->total_forks)
+	{
+		i = 0;
+		while (i < program->total_philos)
+		{
+			pthread_mutex_destroy(&program->total_forks[i]);
+			i++;
+		}
+		free(program->total_forks);
+	}
+	pthread_mutex_destroy(&program->dead_lock);
+	pthread_mutex_destroy(&program->meal_lock);
+	pthread_mutex_destroy(&program->write_lock);
+	pthread_mutex_destroy(&program->monitor_lock);
 }

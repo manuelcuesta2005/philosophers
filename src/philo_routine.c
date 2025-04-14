@@ -13,11 +13,11 @@
 
 void	eat_philo(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->program->meal_lock);
-	printf(GREEN "Philo %d is eating\n" RESET, philo->id);
+	pthread_mutex_lock(&philo->program->monitor_lock);
+	print_status(philo, "is eating", GREEN);
 	philo->last_eaten_time = get_current_time();
 	philo->meals_eaten++;
-	pthread_mutex_unlock(&philo->program->meal_lock);
+	pthread_mutex_unlock(&philo->program->monitor_lock);
 	ft_usleep(philo->time_eat);
 }
 
@@ -38,16 +38,15 @@ void	*routine_philo(void *arg)
 	philo = (t_philo *)arg;
 	while (!is_dead(philo->program))
 	{
-		printf(BLUE "Philo %d is thinking\n" RESET, philo->id);
-		usleep(100);
+		print_status(philo, "is thinking", BLUE);
+		ft_usleep(philo->time_sleep);
 
 		take_forks(philo->id, philo->program);
 		eat_philo(philo);
 		
-		printf(YELLOW "Philo %d is sleeping\n" RESET, philo->id);
-		ft_usleep(philo->time_sleep);
-
 		put_forks(philo->id, philo->program);
+		print_status(philo, "is sleeping", YELLOW);
+		ft_usleep(philo->time_sleep);
 	}
 	return (NULL);
 }
