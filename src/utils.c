@@ -64,8 +64,10 @@ void	print_status(t_philo *philo, const char *status, const char *color)
 	size_t	timestamp;
 
 	pthread_mutex_lock(&philo->program->write_lock);
-	timestamp = get_current_time() - philo->program->start_time;
-	printf("%s[%zu] Philo %d %s%s\n", color, timestamp, philo->id, status, RESET);
+	if (!is_dead(philo->program))
+	{
+		timestamp = get_current_time() - philo->program->start_time;
+		printf("%s[%zu] Philo %d %s%s\n", color, timestamp, philo->id, status, RESET);
+	}
 	pthread_mutex_unlock(&philo->program->write_lock);
-
 }

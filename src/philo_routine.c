@@ -13,11 +13,6 @@
 
 void	eat_philo(t_philo *philo)
 {
-	pthread_mutex_lock(&philo->program->monitor_lock);
-	print_status(philo, "is eating", GREEN);
-	philo->last_eaten_time = get_current_time();
-	philo->meals_eaten++;
-	pthread_mutex_unlock(&philo->program->monitor_lock);
 	ft_usleep(philo->time_eat);
 }
 
@@ -36,17 +31,19 @@ void	*routine_philo(void *arg)
 	t_philo	*philo;
 
 	philo = (t_philo *)arg;
+	if (philo->id % 2 == 0)
+		ft_usleep(200);
 	while (!is_dead(philo->program))
 	{
 		print_status(philo, "is thinking", BLUE);
-		ft_usleep(philo->time_sleep);
-
 		take_forks(philo->id, philo->program);
+		if (is_dead(philo->program))
+			break;
+
 		eat_philo(philo);
-		
-		put_forks(philo->id, philo->program);
 		print_status(philo, "is sleeping", YELLOW);
 		ft_usleep(philo->time_sleep);
+		put_forks(philo->id, philo->program);
 	}
 	return (NULL);
 }

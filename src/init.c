@@ -52,7 +52,7 @@ void	init_forks(int total_philos, t_program *program)
 		pthread_mutex_init(&forks[i], NULL);
 		i++;
 	}
-	program->total_forks = forks;
+	program->forks = forks;
 }
 
 void	init_program(char **argv, t_program *program)
@@ -76,7 +76,7 @@ void	init_program(char **argv, t_program *program)
 	pthread_mutex_init(&program->meal_lock, NULL);
 	pthread_mutex_init(&program->write_lock, NULL);
 	pthread_mutex_init(&program->monitor_lock, NULL);
-	init_philo(argv, program->total_forks, program);
+	init_philo(argv, program->forks, program);
 }
 
 void	destroy_program(t_program *program)
@@ -88,16 +88,18 @@ void	destroy_program(t_program *program)
 		free(program->philos);
 	if (program->state)
 		free(program->state);
-	if (program->total_forks)
+	if (program->forks)
 	{
 		i = 0;
 		while (i < program->total_philos)
 		{
-			pthread_mutex_destroy(&program->total_forks[i]);
+			pthread_mutex_destroy(&program->forks[i]);
 			i++;
 		}
-		free(program->total_forks);
+		free(program->forks);
 	}
+	if (program->threads)
+		free(program->threads);
 	pthread_mutex_destroy(&program->dead_lock);
 	pthread_mutex_destroy(&program->meal_lock);
 	pthread_mutex_destroy(&program->write_lock);

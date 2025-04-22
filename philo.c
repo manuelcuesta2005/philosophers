@@ -11,11 +11,58 @@
 /* ************************************************************************** */
 #include "philo.h"
 
+int	launch_threads(t_program *program)
+{
+	int	i;
+
+	i = 0;
+	program->threads = malloc(sizeof(pthread_t) * program->total_philos);
+	if (!program->threads)
+		return (0);
+	while (i < program->total_philos)
+	{
+		if (pthread_create(&program->threads[i], NULL, routine_philo,
+			(void *)&program->philos[i]) != 0)
+		{
+			printf("Error creating thread %d\n", i);
+			return (0);
+		}
+		i++;
+	}
+	return (1);
+}
+
+int	wait_threads(t_program *program)
+{
+	int	i;
+
+	i = 0;
+	while(i < program->total_philos)
+	{
+		if (pthread_join(program->threads[i], NULL) != 0)
+		{
+			printf("Error joining thread %d\n", i);
+			return (0);
+		}
+		i++;
+	}
+	return (1);
+}
+
+int	launch_monitor(pthread_t *monitor_thread, t_program *program)
+{
+	if (pthread_create(monitor_thread, NULL, monitor, (void *)program) != 0)
+	{
+		printf("Error creating monitor thread\n");
+		return (0);
+	}
+	return (1);
+}
+
 int	main(int argc, char **argv)
 {
 	t_program	program;
-	pthread_t	*threads;
-	int			i;
+    pthread_t   monitor_thread;
 
 	if (argc != 5 && argc != 6)
 	{
@@ -23,45 +70,13 @@ int	main(int argc, char **argv)
 		return (1);
 	}
 	init_program(argv, &program);
-	threads = malloc(sizeof(pthread_t) * program.total_philos);
-	if (!threads)
-	{
-		printf("Error allocating thread array.\n");
+
+	if (!launch_threads(&program))
 		return (1);
-	}
-
-	i = 0;
-	while (i < program.total_philos)
-	{
-		if (pthread_create(&threads[i], NULL, routine_philo,
-				(void *)&program.philos[i]) != 0)
-		{
-			printf("Error creating thread for philosopher %d\n", i);
-			return (1);
-		}
-		i++;
-	}
-
-	i = 0;
-	while (i < program.total_philos)
-	{
-		if (pthread_join(threads[i], NULL) != 0)
-		{
-			printf("Error joining thread for philosopher %d\n", i);
-			return (1);
-		}
-		i++;
-	}
-
-	// Limpieza final
-	i = 0;
-	while (i < program.total_philos)
-	{
-		pthread_mutex_destroy(program.philos[i].left_fork);
-		pthread_mutex_destroy(program.philos[i].rigth_fork);
-		i++;
-	}
-	free(threads);
+	if (!launch_monitor(&monitor_thread, &program))
+		return (1);
+	if (!wait_threads(&program))
+		return (1);
 	destroy_program(&program);
 	return (0);
 }

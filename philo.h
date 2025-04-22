@@ -55,7 +55,8 @@ typedef struct s_program
 	int					dead;
 	int					*state;
 	size_t				start_time;
-	pthread_mutex_t		*total_forks;
+	pthread_t			*threads;
+	pthread_mutex_t		*forks;
 	pthread_mutex_t		dead_lock;
 	pthread_mutex_t		meal_lock;
 	pthread_mutex_t		write_lock;
@@ -79,9 +80,10 @@ int						is_dead(t_program *program);
 // Monitor philo
 void    				take_forks(int i, t_program *program);
 void    				put_forks(int i, t_program *program);
+void					test(int i, t_program *program);
+void    				*monitor(void *arg);
 // utils
 int						ft_usleep(size_t milliseconds);
 size_t					get_current_time(void);
-void					test(int i, t_program *program);
 void					print_status(t_philo *philo, const char *status, const char *color);
 #endif
