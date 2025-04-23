@@ -13,9 +13,9 @@
 
 void	init_philo(char **argv, pthread_mutex_t *forks, t_program *program)
 {
-	int		i;
-	int		total_philos;
-	t_philo	*philos;
+	size_t		i;
+	size_t		total_philos;
+	t_philo		*philos;
 
 	i = 0;
 	total_philos = program->total_philos;
@@ -25,14 +25,14 @@ void	init_philo(char **argv, pthread_mutex_t *forks, t_program *program)
 	while (i < total_philos)
 	{
 		philos[i].id = i + 1;
-		philos[i].time_die = ft_atoi(argv[2]);
-		philos[i].time_eat = ft_atoi(argv[3]);
-		philos[i].time_sleep = ft_atoi(argv[4]);
+		philos[i].time_die = ft_safe_atoi(argv[2]);
+		philos[i].time_eat = ft_safe_atoi(argv[3]);
+		philos[i].time_sleep = ft_safe_atoi(argv[4]);
 		philos[i].meals_eaten = 0;
 		philos[i].left_fork = &forks[i];
 		philos[i].rigth_fork = &forks[(i + 1) % total_philos];
 		philos[i].program = program;
-		philos[i].last_eaten_time = philos->program->start_time;
+		philos[i].last_eaten_time = program->start_time;
 		i++;
 	}
 	program->philos = philos;
@@ -57,15 +57,15 @@ void	init_forks(int total_philos, t_program *program)
 
 void	init_program(char **argv, t_program *program)
 {
-	int		i;
+	size_t		i;
 
 	i = 0;
-	program->total_philos = ft_atoi(argv[1]);
+	program->total_philos = ft_safe_atoi(argv[1]);
 	program->dead = 0;
 	program->state = malloc(sizeof(int) * program->total_philos);
 	if (!program->state)
 		return ;
-	while(i < program->total_philos)
+	while (i < (size_t)program->total_philos)
 	{
 		program->state[i] = THINKING;
 		i++;
@@ -81,8 +81,8 @@ void	init_program(char **argv, t_program *program)
 
 void	destroy_program(t_program *program)
 {
-	int	i;
-	
+	size_t	i;
+
 	i = 0;
 	if (program->philos)
 		free(program->philos);
@@ -91,7 +91,7 @@ void	destroy_program(t_program *program)
 	if (program->forks)
 	{
 		i = 0;
-		while (i < program->total_philos)
+		while (i < (size_t)program->total_philos)
 		{
 			pthread_mutex_destroy(&program->forks[i]);
 			i++;

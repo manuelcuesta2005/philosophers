@@ -13,18 +13,18 @@
 
 int	launch_threads(t_program *program)
 {
-	int	i;
+	size_t	i;
 
 	i = 0;
 	program->threads = malloc(sizeof(pthread_t) * program->total_philos);
 	if (!program->threads)
 		return (0);
-	while (i < program->total_philos)
+	while (i < (size_t)program->total_philos)
 	{
 		if (pthread_create(&program->threads[i], NULL, routine_philo,
-			(void *)&program->philos[i]) != 0)
+				(void *)&program->philos[i]) != 0)
 		{
-			printf("Error creating thread %d\n", i);
+			printf("Error creating thread %zu\n", i);
 			return (0);
 		}
 		i++;
@@ -34,14 +34,14 @@ int	launch_threads(t_program *program)
 
 int	wait_threads(t_program *program)
 {
-	int	i;
+	size_t	i;
 
 	i = 0;
-	while(i < program->total_philos)
+	while (i < (size_t)program->total_philos)
 	{
 		if (pthread_join(program->threads[i], NULL) != 0)
 		{
-			printf("Error joining thread %d\n", i);
+			printf("Error joining thread %zu\n", i);
 			return (0);
 		}
 		i++;
@@ -62,21 +62,18 @@ int	launch_monitor(pthread_t *monitor_thread, t_program *program)
 int	main(int argc, char **argv)
 {
 	t_program	program;
-    pthread_t   monitor_thread;
+	pthread_t	monitor_thread;
 
-	if (argc != 5 && argc != 6)
-	{
-		printf("Usage: ./philo number_of_philos time_to_die time_to_eat time_to_sleep [number_of_times_each_philo_must_eat]\n");
+	if (!parse_arguments(argc, argv))
 		return (1);
-	}
 	init_program(argv, &program);
-
 	if (!launch_threads(&program))
 		return (1);
 	if (!launch_monitor(&monitor_thread, &program))
 		return (1);
 	if (!wait_threads(&program))
 		return (1);
+	pthread_join(monitor_thread, NULL);
 	destroy_program(&program);
 	return (0);
 }

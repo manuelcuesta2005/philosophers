@@ -39,11 +39,11 @@ typedef struct s_philo
 {
 	pthread_t			thread;
 	int					id;
-	int					time_die;
-	int					time_eat;
-	int					time_sleep;
-	int					meals_eaten;
-	int					last_eaten_time;
+	size_t				time_die;
+	size_t				time_eat;
+	size_t				time_sleep;
+	size_t				meals_eaten;
+	size_t				last_eaten_time;
 	pthread_mutex_t		*rigth_fork;
 	pthread_mutex_t		*left_fork;
 	struct s_program	*program;
@@ -52,8 +52,8 @@ typedef struct s_philo
 typedef struct s_program
 {
 	int					total_philos;
-	int					dead;
 	int					*state;
+	size_t				dead;
 	size_t				start_time;
 	pthread_t			*threads;
 	pthread_mutex_t		*forks;
@@ -64,9 +64,10 @@ typedef struct s_program
 	t_philo				*philos;
 }						t_program;
 //  parse
-int						ft_atoi(char *nbr);
+int						ft_safe_atoi(char *str);
 int						valid_numbers(char *argv);
 int						valid_arguments(int argc, char **argv);
+int						parse_arguments(int argc, char **argv);
 //  start program
 void					init_philo(char **argv, pthread_mutex_t *forks,
 							t_program *program);
@@ -78,12 +79,13 @@ void					*routine_philo(void *arg);
 void					eat_philo(t_philo *philo);
 int						is_dead(t_program *program);
 // Monitor philo
-void    				take_forks(int i, t_program *program);
-void    				put_forks(int i, t_program *program);
-void					test(int i, t_program *program);
-void    				*monitor(void *arg);
+void					take_forks(size_t i, t_program *program);
+void					put_forks(size_t i, t_program *program);
+void					test(size_t i, t_program *program);
+void					*monitor(void *arg);
 // utils
 int						ft_usleep(size_t milliseconds);
 size_t					get_current_time(void);
-void					print_status(t_philo *philo, const char *status, const char *color);
+void					print_status(t_philo *philo, const char *status,
+							const char *color);
 #endif

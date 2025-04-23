@@ -11,33 +11,31 @@
 /* ************************************************************************** */
 #include "../philo.h"
 
-int	ft_atoi(char *nbr)
+int	ft_safe_atoi(char *str)
 {
-	int	result;
-	int	sign;
-	int	i;
+	long	result;
+	int		i;
 
 	result = 0;
-	sign = 1;
 	i = 0;
-	while (nbr[i] == ' ' || (nbr[i] >= 9 && nbr[i] <= 13))
+	if (!str || str[0] == '\0')
+		return (-1);
+	while (str[i] == ' ' || (str[i] >= 9 && str[i] <= 13))
+		i++;
+	if (str[i] == '+')
+		i++;
+	else if (str[i] == '-' || str[i] < '0' || str[i] > '9')
+		return (-1);
+	while (str[i] >= '0' && str[i] <= '9')
 	{
+		result = result * 10 + (str[i] - '0');
+		if (result > 2147483647)
+			return (-1);
 		i++;
 	}
-	if (nbr[i] == '+' || nbr[i] == '-')
-	{
-		if (nbr[i] == '-')
-		{
-			sign = -sign;
-		}
-		i++;
-	}
-	while (nbr[i] >= '0' && nbr[i] <= '9')
-	{
-		result = result * 10 + (nbr[i] - '0');
-		i++;
-	}
-	return (result * sign);
+	if (str[i] != '\0')
+		return (-1);
+	return ((int)result);
 }
 
 int	ft_usleep(size_t milliseconds)
@@ -67,7 +65,8 @@ void	print_status(t_philo *philo, const char *status, const char *color)
 	if (!is_dead(philo->program))
 	{
 		timestamp = get_current_time() - philo->program->start_time;
-		printf("%s[%zu] Philo %d %s%s\n", color, timestamp, philo->id, status, RESET);
+		printf("%s[%zu] Philo %d %s%s\n", color, timestamp, philo->id, status,
+			RESET);
 	}
 	pthread_mutex_unlock(&philo->program->write_lock);
 }

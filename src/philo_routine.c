@@ -29,21 +29,22 @@ int	is_dead(t_program *program)
 void	*routine_philo(void *arg)
 {
 	t_philo	*philo;
+	int	index;
 
 	philo = (t_philo *)arg;
+	index = philo->id - 1;
 	if (philo->id % 2 == 0)
 		ft_usleep(200);
 	while (!is_dead(philo->program))
 	{
 		print_status(philo, "is thinking", BLUE);
-		take_forks(philo->id, philo->program);
+		take_forks(index, philo->program);
 		if (is_dead(philo->program))
-			break;
-
+			break ;
 		eat_philo(philo);
 		print_status(philo, "is sleeping", YELLOW);
 		ft_usleep(philo->time_sleep);
-		put_forks(philo->id, philo->program);
+		put_forks(index, philo->program);
 	}
 	return (NULL);
 }
