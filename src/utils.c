@@ -70,3 +70,23 @@ void	print_status(t_philo *philo, const char *status, const char *color)
 	}
 	pthread_mutex_unlock(&philo->program->write_lock);
 }
+
+void	cleanup_program(t_program *program)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < (size_t)program->total_philos)
+	{
+		pthread_mutex_destroy(&program->forks[i]);
+		i++;
+	}
+	pthread_mutex_destroy(&program->dead_lock);
+	pthread_mutex_destroy(&program->meal_lock);
+	pthread_mutex_destroy(&program->write_lock);
+	pthread_mutex_destroy(&program->monitor_lock);
+	free(program->forks);
+	free(program->philos);
+	free(program->state);
+	free(program->threads);
+}

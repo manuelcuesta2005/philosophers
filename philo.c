@@ -64,7 +64,12 @@ int	main(int argc, char **argv)
 	t_program	program;
 	pthread_t	monitor_thread;
 
-	if (!parse_arguments(argc, argv))
+	if (argc != 5 && argc != 6)
+	{
+		printf("Usage: ./philo number_of_philos time_to_die time_to_eat time_to_sleep [number_of_times_each_philo_must_eat]\n");
+		return (1);
+	}
+	if (!parse_arguments(argv))
 		return (1);
 	init_program(argv, &program);
 	if (!launch_threads(&program))
@@ -74,6 +79,8 @@ int	main(int argc, char **argv)
 	if (!wait_threads(&program))
 		return (1);
 	pthread_join(monitor_thread, NULL);
-	destroy_program(&program);
+	for (int i = 0; i < program.total_philos; i++)
+		printf("philo[%d]: %zu meals eaten \n", program.philos[i].id, program.philos[i].meals_eaten);
+	cleanup_program(&program);
 	return (0);
 }

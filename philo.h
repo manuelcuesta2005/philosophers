@@ -55,6 +55,8 @@ typedef struct s_program
 	int					*state;
 	size_t				dead;
 	size_t				start_time;
+	size_t				meals_required;
+	size_t				philosophers_done;
 	pthread_t			*threads;
 	pthread_mutex_t		*forks;
 	pthread_mutex_t		dead_lock;
@@ -67,7 +69,7 @@ typedef struct s_program
 int						ft_safe_atoi(char *str);
 int						valid_numbers(char *argv);
 int						valid_arguments(int argc, char **argv);
-int						parse_arguments(int argc, char **argv);
+int						parse_arguments(char **argv);
 //  start program
 void					init_philo(char **argv, pthread_mutex_t *forks,
 							t_program *program);
@@ -88,4 +90,5 @@ int						ft_usleep(size_t milliseconds);
 size_t					get_current_time(void);
 void					print_status(t_philo *philo, const char *status,
 							const char *color);
+void					cleanup_program(t_program *program);
 #endif

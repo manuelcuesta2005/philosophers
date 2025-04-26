@@ -71,37 +71,15 @@ void	init_program(char **argv, t_program *program)
 		i++;
 	}
 	program->start_time = get_current_time();
+	if (argv[5])
+		program->meals_required = ft_safe_atoi(argv[5]);
+	else
+		program->meals_required = 0;
+	program->philosophers_done = 0;
 	init_forks(program->total_philos, program);
 	pthread_mutex_init(&program->dead_lock, NULL);
 	pthread_mutex_init(&program->meal_lock, NULL);
 	pthread_mutex_init(&program->write_lock, NULL);
 	pthread_mutex_init(&program->monitor_lock, NULL);
 	init_philo(argv, program->forks, program);
-}
-
-void	destroy_program(t_program *program)
-{
-	size_t	i;
-
-	i = 0;
-	if (program->philos)
-		free(program->philos);
-	if (program->state)
-		free(program->state);
-	if (program->forks)
-	{
-		i = 0;
-		while (i < (size_t)program->total_philos)
-		{
-			pthread_mutex_destroy(&program->forks[i]);
-			i++;
-		}
-		free(program->forks);
-	}
-	if (program->threads)
-		free(program->threads);
-	pthread_mutex_destroy(&program->dead_lock);
-	pthread_mutex_destroy(&program->meal_lock);
-	pthread_mutex_destroy(&program->write_lock);
-	pthread_mutex_destroy(&program->monitor_lock);
 }

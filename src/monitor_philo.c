@@ -66,12 +66,34 @@ void	test(size_t i, t_program *program)
 		print_status(philo, "has taken the left fork", MAGENTA);
 		pthread_mutex_lock(philo->rigth_fork);
 		print_status(philo, "has taken the right fork", MAGENTA);
-		pthread_mutex_lock(&program->monitor_lock);
-		philo->last_eaten_time = get_current_time();
-		philo->meals_eaten++;
-		pthread_mutex_unlock(&program->monitor_lock);
-		print_status(philo, "is eating", GREEN);
 	}
+}
+
+void    test_meals(t_program *program)
+{
+    size_t i;
+
+    if (program->meals_required > 0)
+    {
+        pthread_mutex_lock(&program->meal_lock);
+        i = 0;
+        while (i < (size_t)program->total_philos)
+        {
+            if (program->philos[i].meals_eaten < program->meals_required)
+                break;
+            i++;
+        }
+        if (i == (size_t)program->total_philos ||
+            program->philosophers_done == (size_t)program->total_philos)
+        {
+            pthread_mutex_unlock(&program->meal_lock);
+		    pthread_mutex_lock(&program->dead_lock);
+		    program->dead = 1;
+		    pthread_mutex_unlock(&program->dead_lock);
+		    return ;
+        }
+        pthread_mutex_unlock(&program->meal_lock);
+    }
 }
 
 void	*monitor(void *arg)
@@ -85,20 +107,22 @@ void	*monitor(void *arg)
 		i = 0;
 		while (i < (size_t)program->total_philos)
 		{
-			pthread_mutex_lock(&program->monitor_lock);
+            pthread_mutex_lock(&program->monitor_lock);
+            test_meals(program);
 			if ((get_current_time() - program->philos[i].last_eaten_time)
-				> program->philos[i].time_die)
+				>= program->philos[i].time_die)
 			{
 				print_status(&program->philos[i], "died", RED);
 				pthread_mutex_lock(&program->dead_lock);
 				program->dead = 1;
 				pthread_mutex_unlock(&program->dead_lock);
+                pthread_mutex_unlock(&program->monitor_lock);
 				return (NULL);
 			}
 			pthread_mutex_unlock(&program->monitor_lock);
 			i++;
 		}
-		ft_usleep(1000);
+		ft_usleep(500);
 	}
 	return (NULL);
 }
