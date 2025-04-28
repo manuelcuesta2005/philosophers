@@ -13,10 +13,10 @@
 
 void	eat_philo(t_philo *philo)
 {
-	print_status(philo, "is eating", GREEN);
-	philo->last_eaten_time = get_current_time();
-	ft_usleep(philo->time_eat);
 	philo->meals_eaten++;
+	philo->last_eaten_time = get_current_time();
+	print_status(philo, "is eating", GREEN);
+	ft_usleep(philo->time_eat);
 	if (philo->program->meals_required > 0 && philo->meals_eaten == philo->program->meals_required)
 	{
 		pthread_mutex_lock(&philo->program->meal_lock);
@@ -59,6 +59,7 @@ void	*routine_philo(void *arg)
 		if (is_dead(philo->program))
 			break ;
 		print_status(philo, "is thinking", BLUE);
+
 	}
 	return (NULL);
 }

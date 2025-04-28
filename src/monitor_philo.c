@@ -26,7 +26,8 @@ void	take_forks(size_t i, t_program *program)
 			break ;
 		}
 		pthread_mutex_unlock(&program->monitor_lock);
-		ft_usleep(100);
+        if (is_dead(program))
+            break ;
 	}
 }
 
@@ -110,19 +111,18 @@ void	*monitor(void *arg)
             pthread_mutex_lock(&program->monitor_lock);
             test_meals(program);
 			if ((get_current_time() - program->philos[i].last_eaten_time)
-				>= program->philos[i].time_die)
-			{
-				print_status(&program->philos[i], "died", RED);
-				pthread_mutex_lock(&program->dead_lock);
-				program->dead = 1;
-				pthread_mutex_unlock(&program->dead_lock);
+                >= program->philos[i].time_die)
+            {
+                print_status(&program->philos[i], "died", RED);
+                pthread_mutex_lock(&program->dead_lock);
+                program->dead = 1;
+                pthread_mutex_unlock(&program->dead_lock);
                 pthread_mutex_unlock(&program->monitor_lock);
-				return (NULL);
-			}
-			pthread_mutex_unlock(&program->monitor_lock);
+                return (NULL);
+            }
+            pthread_mutex_unlock(&program->monitor_lock);
 			i++;
 		}
-		ft_usleep(500);
 	}
 	return (NULL);
 }
