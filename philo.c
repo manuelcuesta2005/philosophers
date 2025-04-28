@@ -79,6 +79,8 @@ int	main(int argc, char **argv)
 	if (!wait_threads(&program))
 		return (1);
 	pthread_join(monitor_thread, NULL);
+	for (int i = 0; i < program.total_philos; i++)
+		printf("philo[%d]: %zu meals eaten \n", program.philos[i].id, program.philos[i].meals_eaten);
 	cleanup_program(&program);
 	return (0);
 }

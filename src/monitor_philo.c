@@ -17,7 +17,7 @@ void	take_forks(size_t i, t_program *program)
 	program->state[i] = HUNGRY;
 	test(i, program);
 	pthread_mutex_unlock(&program->monitor_lock);
-	while (1)
+	while (!is_dead(program))
 	{
 		pthread_mutex_lock(&program->monitor_lock);
 		if (program->state[i] == EATING)
@@ -26,8 +26,6 @@ void	take_forks(size_t i, t_program *program)
 			break ;
 		}
 		pthread_mutex_unlock(&program->monitor_lock);
-        if (is_dead(program))
-            break ;
 	}
 }
 
@@ -35,15 +33,17 @@ void	put_forks(size_t i, t_program *program)
 {
 	size_t	left;
 	size_t	right;
+    t_philo *philo;
 
 	left = (i + program->total_philos - 1) % program->total_philos;
 	right = (i + 1) % program->total_philos;
+    philo = &program->philos[i];
 	pthread_mutex_lock(&program->monitor_lock);
 	if (program->state[i] == EATING)
 	{
 		program->state[i] = THINKING;
-		pthread_mutex_unlock(program->philos[i].left_fork);
-		pthread_mutex_unlock(program->philos[i].rigth_fork);
+		pthread_mutex_unlock(philo->left_fork);
+		pthread_mutex_unlock(philo->rigth_fork);
 	}
 	test(left, program);
 	test(right, program);
@@ -84,8 +84,7 @@ void    test_meals(t_program *program)
                 break;
             i++;
         }
-        if (i == (size_t)program->total_philos ||
-            program->philosophers_done == (size_t)program->total_philos)
+        if (i == (size_t)program->total_philos)
         {
             pthread_mutex_unlock(&program->meal_lock);
 		    pthread_mutex_lock(&program->dead_lock);
