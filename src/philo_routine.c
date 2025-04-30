@@ -59,6 +59,7 @@ void	*routine_philo(void *arg)
 		if (is_dead(philo->program))
 			break ;
 		print_status(philo, "is thinking", BLUE);
+		ft_usleep(philo->time_sleep);
 	}
 	return (NULL);
 }
